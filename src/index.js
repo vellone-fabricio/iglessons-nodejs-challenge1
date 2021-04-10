@@ -33,7 +33,7 @@ app.post('/users', (request, response) => {
   }
 
   const newUserInformation = {
-    id: uuidv4,
+    id: uuidv4(),
     name,
     username,
     todos: []
@@ -100,7 +100,18 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request;
+  const { id } = request.params;
+
+  const todoExists = user.todos.find(todo => todo.id === id);
+
+  if (!todoExists) {
+    return response.status(404).json({ error: "To do not found!" });
+  }
+
+  user.todos.pop(todoExists);
+
+  return response.status(204).send();
 });
 
 module.exports = app;
